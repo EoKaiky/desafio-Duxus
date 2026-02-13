@@ -16,5 +16,5 @@ import java.util.List;
 public class CriarTimeInputDto {
     private LocalDate data;
 
-    private List<ComposicaoTime> composicaoTime;
+    private List<Long> composicaoTime;
 }
