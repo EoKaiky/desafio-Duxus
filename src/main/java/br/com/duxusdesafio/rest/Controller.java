@@ -1,6 +1,7 @@
 package br.com.duxusdesafio.rest;
 
 import br.com.duxusdesafio.dtos.time.input.CriarTimeInputDto;
+import br.com.duxusdesafio.dtos.time.output.FuncaoMaisComumOutputDTO;
 import br.com.duxusdesafio.dtos.time.output.IntegranteMaisUsadoOutputDTO;
 import br.com.duxusdesafio.model.Integrante;
 import br.com.duxusdesafio.model.Time;
@@ -57,5 +58,16 @@ public class Controller {
 
 
         return ResponseEntity.ok(new IntegranteMaisUsadoOutputDTO(integrante));
+    }
+
+    @GetMapping("/funcao-mais-comum-periodo")
+    public ResponseEntity<FuncaoMaisComumOutputDTO> funcaoMaisComum(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
+        List<Time> listaTodosOsTimes = timeRepository.findAll();
+
+         var funcao = service.funcaoMaisComum(dataInicial, dataFinal, listaTodosOsTimes);
+
+        return ResponseEntity.ok(new FuncaoMaisComumOutputDTO(funcao));
     }
 }

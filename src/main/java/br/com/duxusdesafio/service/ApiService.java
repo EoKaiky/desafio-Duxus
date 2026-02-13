@@ -8,6 +8,7 @@ import br.com.duxusdesafio.model.Time;
 import br.com.duxusdesafio.repository.integrantes.IntegranteJpaRepository;
 import br.com.duxusdesafio.repository.time.TimeJpaRepository;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -104,8 +106,17 @@ public class ApiService {
      * Vai retornar a função mais comum nos times dentro do período
      */
     public String funcaoMaisComum(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        return todosOsTimes.stream()
+                .filter(time -> !time.getData().isBefore(dataInicial) && !time.getData().isAfter(dataFinal))
+                .flatMap(time -> time.getComposicaoTime().stream())
+                .map(composicaoTime -> composicaoTime.getIntegrante())
+                .filter(Objects::nonNull)
+                .map(integrante -> integrante.getFuncao())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
     }
 
     /**
