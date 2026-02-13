@@ -5,10 +5,10 @@ import br.com.duxusdesafio.mappers.time.TimeStructMapper;
 import br.com.duxusdesafio.model.ComposicaoTime;
 import br.com.duxusdesafio.model.Integrante;
 import br.com.duxusdesafio.model.Time;
-import br.com.duxusdesafio.model.Integrante;
 import br.com.duxusdesafio.repository.integrantes.IntegranteJpaRepository;
 import br.com.duxusdesafio.repository.time.TimeJpaRepository;
 import jakarta.transaction.Transactional;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +16,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static jakarta.persistence.GenerationType.UUID;
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Service que possuirá as regras de negócio para o processamento dos dados
@@ -55,7 +54,7 @@ public class ApiService {
                 ComposicaoTime composicao = new ComposicaoTime();
 
                 composicao.setIntegrante(integrante);
-                composicao.setTime(time); // <--- O PULO DO GATO: Vínculo do Pai
+                composicao.setTime(time);
 
                 listaComposicao.add(composicao);
             }
@@ -70,8 +69,10 @@ public class ApiService {
      * Vai retornar um Time, com a composição do time daquela data
      */
     public Time timeDaData(LocalDate data, List<Time> todosOsTimes){
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        return todosOsTimes.stream()
+                .filter(time -> time.getData().equals(data))
+                .findFirst()
+                .orElse(null);
     }
 
     /**
@@ -79,8 +80,15 @@ public class ApiService {
      * dentro do período
      */
     public Integrante integranteMaisUsado(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        return todosOsTimes.stream()
+                .filter(time -> !time.getData().isBefore(dataInicial) && !time.getData().isAfter(dataFinal))
+                .flatMap(time -> time.getComposicaoTime().stream())
+                .map(ComposicaoTime::getIntegrante)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
     }
 
     /**

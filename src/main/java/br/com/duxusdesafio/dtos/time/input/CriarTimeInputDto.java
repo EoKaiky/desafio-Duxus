@@ -1,6 +1,5 @@
 package br.com.duxusdesafio.dtos.time.input;
 
-import br.com.duxusdesafio.model.ComposicaoTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
