@@ -1,9 +1,15 @@
 package br.com.duxusdesafio.service;
 
+import br.com.duxusdesafio.dtos.time.input.CriarTimeInputDto;
 import br.com.duxusdesafio.model.Integrante;
 import br.com.duxusdesafio.model.Time;
+import br.com.duxusdesafio.repository.time.TimeJpaRepository;
+import br.com.duxusdesafio.mappers.time.TimeStructMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +24,22 @@ import java.util.Map;
  * @author carlosau
  */
 @Service
+@RequiredArgsConstructor
 public class ApiService {
+
+    @Autowired
+    private final TimeStructMapper timeStructMapper;
+
+    /**
+     * Metodo de Cadastro de time
+     */
+    @Transactional
+    private void criarTime(CriarTimeInputDto input, TimeJpaRepository repository) {
+
+        final var time = this.timeStructMapper.toEntity(input);
+        repository.save(time);
+
+    }
 
     /**
      * Vai retornar um Time, com a composição do time daquela data
