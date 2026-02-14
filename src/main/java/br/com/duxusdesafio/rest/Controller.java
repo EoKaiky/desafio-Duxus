@@ -1,6 +1,7 @@
 package br.com.duxusdesafio.rest;
 
 import br.com.duxusdesafio.dtos.time.input.CriarTimeInputDto;
+import br.com.duxusdesafio.dtos.time.output.FranquiaMaisFamosaOutputDTO;
 import br.com.duxusdesafio.dtos.time.output.FuncaoMaisComumOutputDTO;
 import br.com.duxusdesafio.dtos.time.output.IntegranteMaisUsadoOutputDTO;
 import br.com.duxusdesafio.model.Integrante;
@@ -8,7 +9,6 @@ import br.com.duxusdesafio.model.Time;
 import br.com.duxusdesafio.repository.time.TimeJpaRepository;
 import br.com.duxusdesafio.service.ApiService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,5 +69,16 @@ public class Controller {
          var funcao = service.funcaoMaisComum(dataInicial, dataFinal, listaTodosOsTimes);
 
         return ResponseEntity.ok(new FuncaoMaisComumOutputDTO(funcao));
+    }
+
+    @GetMapping("/Franquia-mais-famosa-periodo")
+    public ResponseEntity<FranquiaMaisFamosaOutputDTO> franquiaMaisFamosa(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
+        List<Time> listaTodosOsTimes = timeRepository.findAll();
+
+        var franquia = service.franquiaMaisFamosa(dataInicial, dataFinal, listaTodosOsTimes);
+
+        return ResponseEntity.ok(new FranquiaMaisFamosaOutputDTO(franquia));
     }
 }

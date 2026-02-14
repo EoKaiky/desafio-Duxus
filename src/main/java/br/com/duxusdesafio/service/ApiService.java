@@ -93,18 +93,13 @@ public class ApiService {
                 .orElse(null);
     }
 
-    /**
-     * Vai retornar uma lista com os nomes dos integrantes do time mais comum
-     * dentro do período
-     */
+
     public List<String> integrantesDoTimeMaisComum(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
         // TODO Implementar método seguindo as instruções!
         return null;
     }
 
-    /**
-     * Vai retornar a função mais comum nos times dentro do período
-     */
+
     public String funcaoMaisComum(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
         return todosOsTimes.stream()
                 .filter(time -> !time.getData().isBefore(dataInicial) && !time.getData().isAfter(dataFinal))
@@ -123,8 +118,17 @@ public class ApiService {
      * Vai retornar o nome da Franquia mais comum nos times dentro do período
      */
     public String franquiaMaisFamosa(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        return todosOsTimes.stream()
+                .filter(time -> !time.getData().isBefore(dataInicial) && !time.getData().isAfter(dataFinal))
+                .flatMap(time -> time.getComposicaoTime().stream())
+                .map(composicaoTime -> composicaoTime.getIntegrante())
+                .filter(Objects::nonNull)
+                .map(integrante -> integrante.getFranquia())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
     }
 
 
