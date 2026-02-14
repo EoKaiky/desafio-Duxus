@@ -136,16 +136,22 @@ public class ApiService {
      * Vai retornar o número (quantidade) de Franquias dentro do período
      */
     public Map<String, Long> contagemPorFranquia(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        return todosOsTimes.stream()
+                .filter(time -> !time.getData().isBefore(dataInicial) && !time.getData().isAfter(dataFinal))
+                .flatMap(time -> time.getComposicaoTime().stream())
+                .map(comp -> comp.getIntegrante().getFranquia())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
     /**
      * Vai retornar o número (quantidade) de Funções dentro do período
      */
     public Map<String, Long> contagemPorFuncao(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        return todosOsTimes.stream()
+                .filter(time -> !time.getData().isBefore(dataInicial) && !time.getData().isAfter(dataFinal))
+                .flatMap(time -> time.getComposicaoTime().stream())
+                .map(comp -> comp.getIntegrante().getFuncao())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
 }

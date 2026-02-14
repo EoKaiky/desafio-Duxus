@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/times")
@@ -80,5 +81,23 @@ public class Controller {
         var franquia = service.franquiaMaisFamosa(dataInicial, dataFinal, listaTodosOsTimes);
 
         return ResponseEntity.ok(new FranquiaMaisFamosaOutputDTO(franquia));
+    }
+
+    @GetMapping("/Quantidade-de-franquias-periodo")
+    public Map<String, Long> getContagemFranquia(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
+        List<Time> listaTodosOsTimes = timeRepository.findAll();
+
+        return service.contagemPorFranquia(dataInicial, dataFinal, listaTodosOsTimes);
+    }
+
+    @GetMapping("/Quantidade-de-funcao-periodo")
+    public Map<String, Long> getContagemFuncao(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
+        List<Time> listaTodosOsTimes = timeRepository.findAll();
+
+        return service.contagemPorFuncao(dataInicial, dataFinal, listaTodosOsTimes);
     }
 }
