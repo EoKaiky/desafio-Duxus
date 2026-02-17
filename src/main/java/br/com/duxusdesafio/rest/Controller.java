@@ -1,5 +1,6 @@
 package br.com.duxusdesafio.rest;
 
+import br.com.duxusdesafio.dtos.integrante.input.CriarIntegranteInputDTO;
 import br.com.duxusdesafio.dtos.time.input.CriarTimeInputDto;
 import br.com.duxusdesafio.dtos.time.output.FranquiaMaisFamosaOutputDTO;
 import br.com.duxusdesafio.dtos.time.output.FuncaoMaisComumOutputDTO;
@@ -26,11 +27,18 @@ public class Controller {
     private final ApiService service;
     private final TimeJpaRepository timeRepository;
 
-    @PostMapping()
+    @PostMapping("/criar-time")
     public ResponseEntity<Time> criarTime (@RequestBody CriarTimeInputDto inputDto) {
         Time timeSalvo = service.criarTime(inputDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(timeSalvo);
+    }
+
+    @PostMapping("/criar-integrante")
+    public ResponseEntity<Integrante> criarIntegrante (@RequestBody CriarIntegranteInputDTO inputDto) {
+        Integrante integrante = service.criarIntegrante(inputDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(integrante);
     }
 
     @GetMapping("/time-da-data")

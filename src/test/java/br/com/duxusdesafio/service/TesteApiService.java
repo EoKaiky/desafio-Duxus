@@ -8,8 +8,11 @@ import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -23,6 +26,7 @@ public class TesteApiService {
     private final static LocalDate data1995 = LocalDate.of(1995,1, 1);
 
     @Spy
+    @InjectMocks
     private ApiService apiService;
 
 

@@ -1,6 +1,8 @@
 package br.com.duxusdesafio.service;
 
+import br.com.duxusdesafio.dtos.integrante.input.CriarIntegranteInputDTO;
 import br.com.duxusdesafio.dtos.time.input.CriarTimeInputDto;
+import br.com.duxusdesafio.mappers.integrantes.IntegranteStructMapper;
 import br.com.duxusdesafio.mappers.time.TimeStructMapper;
 import br.com.duxusdesafio.model.ComposicaoTime;
 import br.com.duxusdesafio.model.Integrante;
@@ -8,8 +10,6 @@ import br.com.duxusdesafio.model.Time;
 import br.com.duxusdesafio.repository.integrantes.IntegranteJpaRepository;
 import br.com.duxusdesafio.repository.time.TimeJpaRepository;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +37,7 @@ public class ApiService {
     private final TimeJpaRepository repositoryTime;
     private final IntegranteJpaRepository repositoryIntegrante;
     private final TimeStructMapper timeStructMapper;
+    private final IntegranteStructMapper integranteStructMapper;
 
     /**
      * Metodo de Cadastro de time
@@ -65,6 +66,15 @@ public class ApiService {
         time.setComposicaoTime(listaComposicao);
 
         return this.repositoryTime.save(time);
+    }
+
+    /**
+     * Metodo de Cadastro de integrante
+     */
+    @Transactional
+    public Integrante criarIntegrante(CriarIntegranteInputDTO inputDTO){
+        Integrante integrante = this.integranteStructMapper.toEntity(inputDTO);
+        return this.repositoryIntegrante.save(integrante);
     }
 
     /**
@@ -135,11 +145,15 @@ public class ApiService {
     /**
      * Vai retornar o número (quantidade) de Franquias dentro do período
      */
-    public Map<String, Long> contagemPorFranquia(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
+    public Map<String, Long> contagemPorFranquia(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes) {
         return todosOsTimes.stream()
-                .filter(time -> !time.getData().isBefore(dataInicial) && !time.getData().isAfter(dataFinal))
-                .flatMap(time -> time.getComposicaoTime().stream())
-                .map(comp -> comp.getIntegrante().getFranquia())
+                .filter(time ->
+                        (dataInicial == null || time.getData().isAfter(dataInicial)) && (dataFinal   == null || !time.getData().isAfter(dataFinal)))
+                .flatMap(time -> time.getComposicaoTime().stream()
+                        .map(ComposicaoTime::getIntegrante)
+                        .filter(i -> i != null && i.getFranquia() != null && !i.getFranquia().trim().isEmpty())
+                        .map(i -> i.getFranquia().trim())
+                        .distinct())
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
@@ -148,9 +162,13 @@ public class ApiService {
      */
     public Map<String, Long> contagemPorFuncao(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
         return todosOsTimes.stream()
-                .filter(time -> !time.getData().isBefore(dataInicial) && !time.getData().isAfter(dataFinal))
-                .flatMap(time -> time.getComposicaoTime().stream())
-                .map(comp -> comp.getIntegrante().getFuncao())
+                .filter(time ->
+                        (dataInicial == null || time.getData().isAfter(dataInicial)) && (dataFinal   == null || !time.getData().isAfter(dataFinal)))
+                .flatMap(time -> time.getComposicaoTime().stream()
+                        .map(ComposicaoTime::getIntegrante)
+                        .filter(i -> i != null && i.getFuncao() != null && !i.getFuncao().trim().isEmpty())
+                        .map(i -> i.getFuncao().trim())
+                        .distinct())
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
