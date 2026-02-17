@@ -162,13 +162,14 @@ public class ApiService {
      */
     public Map<String, Long> contagemPorFuncao(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
         return todosOsTimes.stream()
-                .filter(time ->
-                        (dataInicial == null || time.getData().isAfter(dataInicial)) && (dataFinal   == null || !time.getData().isAfter(dataFinal)))
+                .filter(time -> (dataInicial == null || time.getData().isAfter(dataInicial)) &&
+                                      (dataFinal   == null || !time.getData().isAfter(dataFinal)))
                 .flatMap(time -> time.getComposicaoTime().stream()
-                        .map(ComposicaoTime::getIntegrante)
-                        .filter(i -> i != null && i.getFuncao() != null && !i.getFuncao().trim().isEmpty())
-                        .map(i -> i.getFuncao().trim())
-                        .distinct())
+                .map(ComposicaoTime::getIntegrante))
+                .filter(i -> i != null && i.getNome() != null && i.getFuncao() != null && !i.getFuncao().trim().isEmpty())
+                .collect(Collectors.collectingAndThen(Collectors.toMap(i -> i.getNome().trim().toLowerCase(),i -> i,
+                        (existente, novo) -> existente), map -> map.values().stream()))
+                .map(i -> i.getFuncao().trim())
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
