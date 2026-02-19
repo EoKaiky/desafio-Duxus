@@ -105,8 +105,18 @@ public class ApiService {
 
 
     public List<String> integrantesDoTimeMaisComum(LocalDate dataInicial, LocalDate dataFinal, List<Time> todosOsTimes){
-        // TODO Implementar método seguindo as instruções!
-        return null;
+        return todosOsTimes.stream()
+                .filter(time -> (dataInicial == null || !time.getData().isBefore(dataInicial)) &&
+                        (dataFinal == null || !time.getData().isAfter(dataFinal)))
+                .map(time -> time.getComposicaoTime().stream()
+                        .map(comp -> comp.getIntegrante().getNome())
+                        .sorted() // Ordenação é crucial para comparação de listas
+                        .collect(Collectors.toList()))
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(new ArrayList<>());
     }
 
 

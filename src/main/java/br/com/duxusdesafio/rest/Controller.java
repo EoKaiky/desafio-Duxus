@@ -80,6 +80,15 @@ public class Controller {
         return ResponseEntity.ok(new FuncaoMaisComumOutputDTO(funcao));
     }
 
+    @GetMapping("/Integrantes-time-mais-comum")
+    public ResponseEntity<List<String>> integrantesDoTimeMaisComum(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+                                                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
+        List<Time> listaTodosOsTimes = timeRepository.findAll();
+
+        List<String> resultado = service.integrantesDoTimeMaisComum(dataInicial, dataFinal, listaTodosOsTimes);
+        return ResponseEntity.ok(resultado);
+    }
+
     @GetMapping("/Franquia-mais-famosa-periodo")
     public ResponseEntity<FranquiaMaisFamosaOutputDTO> franquiaMaisFamosa(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
